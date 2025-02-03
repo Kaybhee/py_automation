@@ -11,23 +11,18 @@ def get_html_parser(links):
     # return res.content
 
 def get_product_prices(soup):
-    price_container = soup.find("div", {"class" : "a-section a-spacing-none aok-align-center aok-relative"})
-    prices = price_container.find("span", {"class" : "aok-offscreen"})
-    for price in prices:
-         = price.text.strip().replace("$", "").replace(",", "")
+    price = soup.find("span", class_ = "a-price-whole")
+    pr = [pr.text.strip().replace(".", "") for pr in price]
+    return pr[0]
 
-
-
-    pass
 
 
 def get_product_title(soup):
-    # ele_id = soup.findAll('div', {"a-section a-spacing-none aok-align-center aok-relative"})
-    price_spans = soup.find("div", id = "titleSection")
-    for span in price_spans:
-        price = span.text.strip()
+    title_spans = soup.find("span", id = "productTitle")
+    for span in title_spans:
+        title = span.text.strip()
     # price = ele_id.text.strip().replace("$", "").replace(",", "")
-        print(price)
+        return title 
 
 def product_info(links):
     products = {}
@@ -35,8 +30,10 @@ def product_info(links):
         # print("This is obtaining the link:", i)
     html = get_html_parser(links)
     soup = BeautifulSoup(html, 'lxml')
-
-    products["Title"] = get_product_title(soup)
+    title = get_product_title(soup)
+    price = get_product_prices(soup)
+    products["title"] = title
+    products["Prices"] = price
     print(products)
     # price = soup.find_all("div", {'class': "a-section a-spacing-none aok-align-center aok-relative"})
     # print(price)
@@ -48,4 +45,4 @@ if __name__== "__main__":
         reader = csv.reader(csv_file, delimiter=',')
         for row in reader:
             links = row[0]
-            print(product_info(links))
+            product_info(links)
