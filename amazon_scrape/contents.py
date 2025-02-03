@@ -15,14 +15,17 @@ def get_product_prices(soup):
     pr = [pr.text.strip().replace(".", "") for pr in price]
     return pr[0]
 
-
-
 def get_product_title(soup):
     title_spans = soup.find("span", id = "productTitle")
-    for span in title_spans:
-        title = span.text.strip()
+    title = [span.text.strip() for span in title_spans]
     # price = ele_id.text.strip().replace("$", "").replace(",", "")
-        return title 
+    return title[0]
+
+def get_product_rating(soup):
+    new_r = soup.find("span", attrs =  {"class" :"a-icon-alt"})
+    ratings = [float(pr_rat.text.strip().split()[0]) for pr_rat in new_r]
+    # new_r.find("span", class_ = "a-icon-alt" )
+    return ratings
 
 def product_info(links):
     products = {}
@@ -32,8 +35,10 @@ def product_info(links):
     soup = BeautifulSoup(html, 'lxml')
     title = get_product_title(soup)
     price = get_product_prices(soup)
+    rating = get_product_rating(soup)
     products["title"] = title
     products["Prices"] = price
+    products["rating"] = rating
     print(products)
     # price = soup.find_all("div", {'class': "a-section a-spacing-none aok-align-center aok-relative"})
     # print(price)
