@@ -2,8 +2,10 @@ from  bs4 import BeautifulSoup
 import csv
 import requests
 from datetime import datetime
+import concurrent.futures
+from tqdm import tqdm
 soup = BeautifulSoup()
-
+NO_OF_THREADS = 4
 
 def get_html_parser(links):
     res = requests.get(url=links)
@@ -43,7 +45,9 @@ def get_product_rating(soup):
     # new_r.find("span", class_ = "a-icon-alt" )
     return ratings[0]
 
-def product_info(links):
+
+
+def product_info(links, output):
     products = {}
     print("The scraped link:", links)
         # print("This is obtaining the link:", i)
@@ -61,17 +65,21 @@ def product_info(links):
     # add_details = 
     products.update(product_list(soup))
     # return add_details
-    return products
-
+    output.append(products)
 
 
 if __name__== "__main__":
     product_table = []
+    links = []
     with open('amazon_links.csv') as csv_file:
-        reader = csv.reader(csv_file, delimiter=',')
-        for row in reader:
-            links = row[0]
-            product_table.append(product_info(links))
+        links = list(csv.reader(csv_file, delimiter=','))
+        with concurrent.futures.ThreadPoolExecutor(max_workers = NO_OF_THREADS) as exec:
+            for num in tqdm(range(0, len(links))):
+                exec.submit(product_info, links[num][0], product_table)
+        # print(urls)
+        # for row in reader:
+        #     links = row[0]
+        #     product_table.append(product_info(links))
             # product_table.append(
     #         print(product_table)
     file_name = "Output file - {}.csv".format(datetime.today().strftime("%m-%d-%Y"))
