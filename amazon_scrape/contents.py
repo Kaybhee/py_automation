@@ -2,7 +2,6 @@ from  bs4 import BeautifulSoup
 import csv
 import requests
 from datetime import datetime
-from selenium import webdriver
 soup = BeautifulSoup()
 
 
@@ -25,22 +24,24 @@ def get_product_title(soup):
 
 def product_list(soup):
     details = {}
-    pr_table = soup.find("div", id = "prodDetails")
-    pr_table_data = pr_table.findAll("table", class_ = "productDetails_detailBullets_sections1")
+    pr_table = soup.find("div", class_ = "a-section table-padding")
+    pr_table_data = pr_table.findAll("table", id = "productDetails_detailBullets_sections1")
     for table in pr_table_data:
         table_rows = table.findAll("tr")
         for row in table_rows:
-            row_key = row.find("th").text.strip() 
-            row_value = row.find("td").text.strip()
+            row_key = row.find("th").text
+            row_value = row.find("td").text
             # print(row_key)
             details[row_key] = row_value
     return details
 
 def get_product_rating(soup):
     new_r = soup.find("span", attrs =  {"class" :"a-icon-alt"})
-    ratings = [float(pr_rat.text.strip().split()[0]) for pr_rat in new_r]
+    for pr_rat in new_r:
+        ratings = pr_rat.text.split()
+    # ratings = [float(pr_rat.text.strip().split()[0]) for pr_rat in new_r]
     # new_r.find("span", class_ = "a-icon-alt" )
-    return ratings
+    return ratings[0]
 
 def product_info(links):
     products = {}
@@ -76,7 +77,7 @@ if __name__== "__main__":
     file_name = "Output file - {}.csv".format(datetime.today().strftime("%m-%d-%Y"))
     with open(file_name, "w") as file:
         writer = csv.writer(file)
-        writer.writerow(product_table[1].keys())
+        writer.writerow(product_table[0].keys())
         for product in product_table:
             writer.writerow(product.values())
 
