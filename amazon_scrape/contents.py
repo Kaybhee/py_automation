@@ -26,17 +26,15 @@ def get_product_title(soup):
 def product_list(soup):
     details = {}
     pr_table = soup.find("div", id = "prodDetails")
-    if pr_table:
-        pr_table_data = pr_table.find_all("table", class_ = "productDetails_detailBullets_sections1")
-        # row_key = pr_table.find("th", class_ = "a-color-secondary a-size-base
-        for rows in pr_table_data:
-            table_rows = rows.find("tr")
-            for row in table_rows:
-                row_key = row.find("th").text.strip() 
-                row_value = row.find("td").text.strip()
-                # print(row_key)
+    pr_table_data = pr_table.findAll("table", class_ = "productDetails_detailBullets_sections1")
+    for table in pr_table_data:
+        table_rows = table.findAll("tr")
+        for row in table_rows:
+            row_key = row.find("th").text.strip() 
+            row_value = row.find("td").text.strip()
+            # print(row_key)
             details[row_key] = row_value
-        # return details
+    return details
 
 def get_product_rating(soup):
     new_r = soup.find("span", attrs =  {"class" :"a-icon-alt"})
@@ -59,12 +57,10 @@ def product_info(links):
     products["Prices"] = price
     products["rating"] = rating
     # products["Products"] = table
-    add_details = product_list(soup)
-    if add_details:
-        print(products.update(add_details))
+    # add_details = 
+    products.update(product_list(soup))
     # return add_details
-        print(products)
- 
+    return products
 
 
 
@@ -76,10 +72,11 @@ if __name__== "__main__":
             links = row[0]
             product_table.append(product_info(links))
             # product_table.append(
-            print(product_table)
-    # file_name = "Output file - {}.csv".format(datetime.today().strftime("%m-%d-%Y"))
-    # with open(file_name, "w") as file:
-    #     writer = csv.writer(file)
-    #     writer.writerow(product_table.keys())
-    #     pr_values = [writer.writerow(product.values()) for product in product_table]
+    #         print(product_table)
+    file_name = "Output file - {}.csv".format(datetime.today().strftime("%m-%d-%Y"))
+    with open(file_name, "w") as file:
+        writer = csv.writer(file)
+        writer.writerow(product_table[1].keys())
+        for product in product_table:
+            writer.writerow(product.values())
 
