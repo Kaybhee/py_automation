@@ -5,7 +5,7 @@ from datetime import datetime
 import concurrent.futures
 from tqdm import tqdm
 soup = BeautifulSoup()
-NO_OF_THREADS = 4
+NO_OF_THREADS = 5
 
 def get_html_parser(links):
     res = requests.get(url=links)
@@ -69,7 +69,7 @@ def product_info(links, output):
 
 
 if __name__== "__main__":
-    product_table = []
+    product_table = {}
     links = []
     with open('amazon_links.csv') as csv_file:
         links = list(csv.reader(csv_file, delimiter=','))
@@ -85,7 +85,7 @@ if __name__== "__main__":
     file_name = "Output file - {}.csv".format(datetime.today().strftime("%m-%d-%Y"))
     with open(file_name, "w") as file:
         writer = csv.writer(file)
-        writer.writerow(product_table[0].keys())
+        writer.writerow(product_table.keys())
         for product in product_table:
             writer.writerow(product.values())
 
